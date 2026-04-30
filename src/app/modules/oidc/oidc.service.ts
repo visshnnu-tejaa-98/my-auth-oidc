@@ -6,6 +6,7 @@ const getOIDCEndPoints = () => {
   }
 
   return {
+    issuer: ISSUER,
     authorization_endpoint: `${ISSUER}/o/authorize`,
     token_endpoint: `${ISSUER}/o/token`,
     userinfo_endpoint: `${ISSUER}/o/userinfo`,
