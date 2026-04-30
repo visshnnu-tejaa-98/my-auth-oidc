@@ -2,7 +2,6 @@ import { NextFunction, Request, Response } from "express";
 import ApiError from "../../common/utils/api-error";
 import { verifyAccessToken } from "../../common/utils/jwt.utils";
 import User from "./auth.schema";
-import { ALLOWED_ROLES } from "../../common/utils/constants";
 
 const authenticate = async (
   req: Request,
