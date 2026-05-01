@@ -10,7 +10,7 @@ const getOIDCEndPoints = () => {
 
   return {
     issuer: ISSUER,
-    authorization_endpoint: `${ISSUER}/o/authorize`,
+    authorization_endpoint: `${ISSUER}/o/authenticate`,
     token_endpoint: `${ISSUER}/o/token`,
     userinfo_endpoint: `${ISSUER}/o/userinfo`,
     jwks_uri: `${ISSUER}/o/jwks.json`,

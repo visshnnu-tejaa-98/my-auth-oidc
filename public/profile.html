@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #121212;
+        color: #ffffff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+      .profile-container {
+        background-color: #1e1e1e;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        width: 300px;
+        text-align: center;
+      }
+      h2 {
+        margin-bottom: 20px;
+        color: #ffffff;
+      }
+      .avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        margin-bottom: 15px;
+        border: 2px solid #4caf50;
+      }
+      .user-detail {
+        margin-bottom: 10px;
+      }
+      .label {
+        font-weight: bold;
+        color: #cccccc;
+      }
+      .value {
+        color: #ffffff;
+      }
+      .error {
+        color: #ff6b6b;
+        margin-top: 15px;
+      }
+      .loading {
+        color: #cccccc;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="profile-container">
+      <h2>Profile</h2>
+      <div id="profile-content">
+        <div class="loading">Loading...</div>
+      </div>
+    </div>
+
+    <script>
+      console.log(
+        "Fetching profile with token:",
+        localStorage.getItem("accessToken"),
+      );
+      async function fetchProfile() {
+        try {
+          const response = await fetch("/o/userinfo", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            },
+          });
+
+          const result = await response.json();
+          if (!response.ok) {
+            throw new Error(result.message || `HTTP ${response.status}`);
+          }
+
+          const user = result.data; // Assuming the response structure
+
+          document.getElementById("profile-content").innerHTML = `
+                    <img src="${user.avatar || "https://via.placeholder.com/100"}" alt="Avatar" class="avatar">
+                    <div class="user-detail">
+                        <span class="label">Name:</span> <span class="value">${user.name}</span>
+                    </div>
+                    <div class="user-detail">
+                        <span class="label">Email:</span> <span class="value">${user.email}</span>
+                    </div>
+                `;
+        } catch (error) {
+          document.getElementById("profile-content").innerHTML = `
+                    <div class="error">Error loading profile: ${error.message}</div>
+                `;
+        }
+      }
+
+      // Fetch profile on page load
+      fetchProfile();
+    </script>
+  </body>
+</html>

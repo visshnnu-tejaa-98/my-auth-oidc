@@ -20,6 +20,7 @@ import {
 import User from "./auth.schema";
 import { fileUpload } from "../../common/config/imagekit";
 import path from "node:path";
+import { JWTClaims } from "../../common/utils/types";
 
 const register = async (userData: RegsiterUserPayload) => {
   const { name, email, password, role } = userData;
@@ -77,7 +78,16 @@ const login = async ({ email, password }: LoginUserPayload) => {
   if (!user.isVerified)
     throw ApiError.badRequest("Please verify your email before login");
 
-  const accessToken = generateAccessToken(user._id);
+  const claims: JWTClaims = {
+    iss: process.env.ISSUER_URL || "http://localhost:9000",
+    sub: user._id.toString(),
+    email,
+    email_verified: user.isVerified,
+    name: user.name,
+    picture: user.avatar || "",
+  };
+
+  const accessToken = generateAccessToken(claims);
   const refreshToken = generateRefreshToken(user._id);
   const hashedRefreshToken = hashToken(refreshToken);
 

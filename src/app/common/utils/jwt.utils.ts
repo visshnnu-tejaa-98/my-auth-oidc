@@ -1,4 +1,4 @@
-import jwt, { SignOptions } from "jsonwebtoken";
+import jwt, { SignOptions, VerifyOptions } from "jsonwebtoken";
 import { Types } from "mongoose";
 import { StringValue } from "ms";
 import crypto from "crypto";
@@ -7,6 +7,8 @@ import {
   AccessTokenPayload,
   VerifyEmailTokenPayload,
 } from "../../modules/auth/auth.types";
+import { JWTClaims } from "./types";
+import { PUBLIC_KEY, PRIVATE_KEY } from "./certs";
 
 const hashToken = (token: string) => {
   return crypto.createHash("sha256").update(token).digest("hex");
@@ -31,23 +33,16 @@ const generateVerifyToken = (email: string): string => {
   return jwt.sign(payload, secret, options);
 };
 
-const generateAccessToken = (id: Types.ObjectId) => {
-  const payload = { id: id.toString() };
-  const secret = process.env.JWT_ACCESS_TOKEN_SECRET;
-
-  if (!secret)
-    throw ApiError.badRequest(
-      "Something went wrong while creating a access token",
-    );
-
+const generateAccessToken = (claims: JWTClaims) => {
   const expiresIn =
     (process.env.JWT_ACCESS_TOKEN_EXPIRES as StringValue) || "15m";
 
   const options: SignOptions = {
     expiresIn,
+    algorithm: "RS256",
   };
 
-  return jwt.sign(payload, secret, options);
+  return jwt.sign(claims, PRIVATE_KEY, options);
 };
 
 const generateRefreshToken = (id: Types.ObjectId) => {
@@ -102,14 +97,11 @@ const verifyEmailVerificationToken = (
 };
 
 const verifyAccessToken = (token: string): AccessTokenPayload => {
-  const secret = process.env.JWT_ACCESS_TOKEN_SECRET;
+  const options: VerifyOptions = {
+    algorithms: ["RS256"],
+  };
 
-  if (!secret)
-    throw ApiError.badRequest(
-      "Something went wrong while verifing a access token",
-    );
-
-  return jwt.verify(token, secret) as AccessTokenPayload;
+  return jwt.verify(token, PUBLIC_KEY, options) as AccessTokenPayload;
 };
 
 const verifyRefreshToken = (token: string) => {

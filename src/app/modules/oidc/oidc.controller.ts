@@ -10,4 +10,7 @@ const getKeys = async (req: Request, res: Response) => {
   return res.json(await OIDCService.getKeys());
 };
 
-export { getOIDCEndPoints, getKeys };
+const getUserInfo = (req: Request, res: Response) => {
+  res.redirect("/api/auth/profile");
+};
+export { getOIDCEndPoints, getKeys, getUserInfo };

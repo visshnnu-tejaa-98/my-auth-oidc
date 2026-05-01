@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign In</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #121212;
+        color: #ffffff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+      .signin-container {
+        background-color: #1e1e1e;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        width: 300px;
+      }
+      h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #ffffff;
+      }
+      form {
+        display: flex;
+        flex-direction: column;
+      }
+      label {
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #ffffff;
+      }
+      input[type="email"],
+      input[type="password"] {
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #555;
+        border-radius: 4px;
+        font-size: 16px;
+        background-color: #2a2a2a;
+        color: #ffffff;
+      }
+      input[type="email"]:focus,
+      input[type="password"]:focus {
+        outline: none;
+        border-color: #4caf50;
+      }
+      button {
+        padding: 10px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #45a049;
+      }
+      .error {
+        color: #ff6b6b;
+        margin-bottom: 10px;
+      }
+      .link {
+        text-align: center;
+        margin-top: 15px;
+      }
+      .link a {
+        color: #4caf50;
+        text-decoration: none;
+      }
+      .link a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="signin-container">
+      <h2>Sign In</h2>
+      <form id="signin-form">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required />
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required />
+
+        <button type="submit">Sign In</button>
+      </form>
+      <div class="link">
+        <p>No Account? <a href="signup.html">Please Sign Up</a></p>
+      </div>
+    </div>
+    <script>
+      const form = document.getElementById("signin-form");
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+
+        try {
+          console.log(1111, "calling api call");
+          const response = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: {
+              "Content-type": "application/json",
+            },
+            body: JSON.stringify(data),
+          });
+          const result = await response.json();
+          console.log({ result });
+          if (response.ok && result.data?.accessToken) {
+            localStorage.setItem("accessToken", result.data.accessToken);
+            setTimeout(() => {
+              window.location.href = "profile.html";
+            }, 500); // Clear token after 1 hour
+          } else {
+            alert("Error while user login");
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      });
+    </script>
+  </body>
+</html>
