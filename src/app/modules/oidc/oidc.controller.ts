@@ -6,4 +6,8 @@ const getOIDCEndPoints = (req: Request, res: Response) => {
   return res.json(serviceDiscoveryendPoints);
 };
 
-export { getOIDCEndPoints };
+const getKeys = async (req: Request, res: Response) => {
+  return res.json(await OIDCService.getKeys());
+};
+
+export { getOIDCEndPoints, getKeys };
